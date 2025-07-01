@@ -5,10 +5,10 @@ import crypto from 'k6/crypto';
 import encoding from 'k6/encoding';
 // import { createHash } from 'https://jslib.k6.io/hash/1.0.0/index.js';
 
-const base64Pdf = open('./document.b64');
+const base64Pdf = open('../document.b64');
 
 const users = new SharedArray('userData', () =>
-  open('./user.csv')
+  open('../user.csv')
     .split('\n')
     .slice(1)
     .filter(line => line.trim() !== '')
@@ -28,8 +28,8 @@ const users = new SharedArray('userData', () =>
 );
 
 export const options = {
-  vus: 1,                  // Jumlah virtual user aktif
-  duration: '10s',         // Total waktu pengujian
+  vus: 50,                  // Jumlah virtual user aktif
+  duration: '60s',         // Total waktu pengujian
   thresholds: {
     http_req_duration: ['p(95)<=10000'], // 95% request < 10 detik
   },
