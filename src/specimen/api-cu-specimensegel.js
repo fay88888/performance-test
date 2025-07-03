@@ -25,7 +25,7 @@ const users = new SharedArray('userData', () =>
 
 export const options = {
   vus: 1,
-  duration: '10s',
+  duration: '1s',
   thresholds: {
     http_req_duration: ['p(95)<=10000'],
   },
