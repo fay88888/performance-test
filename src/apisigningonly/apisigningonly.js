@@ -49,7 +49,7 @@ export default function signingFlow() {
   // console.log(user);
   const timestamp = Date.now().toString();
   const emailMd5 = crypto.md5(user.email, 'hex');
-  console.log('client-Id:',user.clientId )
+  //console.log('client-Id:',user.clientId )
   const signature = crypto.sha256(user.clientId + emailMd5 + timestamp, 'hex');
 
 
@@ -110,7 +110,21 @@ const payload = JSON.stringify({
 
   // console.log(res);
 
-if (res.status !== 200) {
+if (res.status === 200) {
+  let documentId = '';
+  let message = '';
+
+  try {
+    const responseJson = res.json();
+    message = responseJson?.message || '';
+    documentId = responseJson?.data?.documentId || '';
+  } catch (e) {
+    message = 'ParseError';
+  }
+
+  console.log(`${user.email},${user.referenceId},${res.status},${res.timings.duration},"${message}","${documentId}"`);
+}
+ else {
   console.error(`${user.email} gagal: status ${res.status} - ${res.status_text}`);
 }
 
