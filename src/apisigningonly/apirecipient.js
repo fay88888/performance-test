@@ -7,8 +7,8 @@ const STATIC_SERVER_KEY = 'a2V5MDYwYTA4NDMtZjRiNi00YTJmLWIzYTMtM2ZkYTE3ZGM5MzJj'
 const STATIC_CLIENT_ID = 'Y2lkOTQ2YzhiMjYtZjdkNy00NmYzLTk1YmUtZjcxMDAzZDQ1YjI4';
 const STATIC_USERID = 'b6cbf1f6-d469-4973-8e77-9fc25724da5e';
 
-const users = new SharedArray('userData', () =>
-  open('./log_detail.csv')
+/*const users = new SharedArray('userData', () =>
+  open('./log_detail48.csv')
     .split('\n')
     .slice(1)
     .filter(line => line.trim() !== '')
@@ -25,9 +25,43 @@ const users = new SharedArray('userData', () =>
       }
     })
     .filter(Boolean) // hapus nilai null dari mapping
-);
+);*/
 
-export const options = {
+const users = new SharedArray('userData', () => {
+  const lines = open('./log_detail48.csv')
+  .split('\n')
+  .map(line => line.replace('\r', ''))
+  .slice(1)
+  .filter(line => line.trim() !== '');
+
+
+const seen = new Set();
+
+let valid = 0;
+let skipped = 0;
+
+return lines
+  .map(line => {
+    const columns = line.split(',');
+    if (columns.length >= 6) {
+      const docId = columns[4].trim();
+      const signId = columns[5].trim();
+
+      if (!seen.has(docId)) {
+        seen.add(docId);
+        valid++;
+        return { documentId: docId, signId: signId };
+      }
+    } else {
+      console.warn('⚠️ Baris tidak lengkap, dilewati:', line);
+      skipped++;
+    }
+    return null;
+  })
+  .filter(Boolean);
+});
+
+/*export const options = {
   vus: 1,
   duration: '1s',
   thresholds: {
@@ -42,7 +76,33 @@ export default function signingFlow() {
     return;
   }
 
-  const user = users[Math.floor(Math.random() * users.length)];
+  const user = users[Math.floor(Math.random() * users.length)];*/
+
+
+const totalUsers = users.length;
+const vus = 48;
+const iterations = Math.ceil(totalUsers / vus); // ⏱ Hitung berdasarkan jumlah data
+
+export const options = {
+  scenarios: {
+    tandaDokumen: {
+      executor: 'per-vu-iterations',
+      vus: vus,
+      iterations: iterations,
+    }
+  },
+};
+
+export default function signingFlow() {
+  const userIndex = (__VU - 1) * iterations + __ITER;
+
+  if (userIndex >= totalUsers) {
+    console.log(`📦 Semua documentId sudah habis untuk VU ${__VU}, iterasi ${__ITER}`);
+    return;
+  }
+
+  const user = users[userIndex];
+
   const timestamp = Date.now().toString();
   const emailMd5 = crypto.md5('starry.admin@yopmail.com', 'hex');
   const signature = crypto.sha256(STATIC_CLIENT_ID + emailMd5 + timestamp, 'hex');
@@ -96,7 +156,7 @@ export default function signingFlow() {
  // console.log(payload);
   const res = http.post('https://apionprem.mesign.id/api/v1/signing/usersign', payload, {
     headers,
-    timeout: '1s',
+    timeout: '30s',
   });
 
   check(res, {
