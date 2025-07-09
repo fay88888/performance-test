@@ -1,0 +1,182 @@
+# performance-test
+# performance-test
+# performance-test
+Untuk run log dan masukan kedalam .txt
+New-Item -ItemType Directory -Path src/apisigningonly -Force
+
+k6 run src/apisigningonly/apisigningonly.js > src/apisigningonly/hasil_log.txt 2>&1
+
+Get-Content src/apisigningonly/hasil_log.txt |
+  Where-Object { $_ -like '*msg=*' } |
+  ForEach-Object {
+    $_ = $_ -replace '\\', ''
+ $_ = $_ -replace 'source=console',''
+
+    $f = ($_ -split 'msg=')[1] -replace '"', '' -split ','
+
+    [PSCustomObject]@{
+      'user.email'           = $f[0]
+      'user.referenceId'     = $f[1]
+      'res.status'           = $f[2]
+      'res.timings.duration' = $f[3]
+      'message'              = $f[4]
+      'documentId'           = $f[5].Trim()
+
+    }
+  } |
+  Export-Csv src/apisigningonly/log_summary.csv -NoTypeInformation -Encoding utf8
+
+  ________________________________________________________
+  powershell menjadikan csv tanpa petik --- log summary
+  
+New-Item -ItemType Directory -Path src/apisigningonly -Force
+k6 run src/apisigningonly/apisigningonly.js > src/apisigningonly/hasil_log.txt 2>&1
+
+Get-Content src/apisigningonly/hasil_log.txt |
+  Where-Object { $_ -like '*msg=*' } |
+  ForEach-Object {
+    $_ = $_ -replace '\\', ''
+    $_ = $_ -replace 'source=console',''
+
+    $f = ($_ -split 'msg=')[1] -replace '"', '' -split ','
+
+    if ($f.Count -lt 6) { return }
+
+    [PSCustomObject]@{
+      'user.email'            = $f[0].Trim()
+      'user.referenceId'      = $f[1].Trim()
+      'res.status'            = [int]$f[2].Trim()
+      'res.timings.duration'  = [double]$f[3].Trim()
+      'message'               = $f[4].Trim()
+      'documentId'            = $f[5].Trim()
+    }
+  } |
+  ConvertTo-Csv -NoTypeInformation |
+  ForEach-Object { $_ -replace '"', '' } |
+  Set-Content src/apisigningonly/log_summary.csv -Encoding UTF8
+___________________________________________________________________________________________
+  run scrip js kedalam json
+  k6 run src/apisigningonly/apisigningonly.js --summary-export=signonly-1vu1s.json  
+
+
+  __________________________________________________
+
+
+
+
+  Powershell untuk menjadikan ke csv dan tanpa petik --- hasil detail
+  New-Item -ItemType Directory -Path src/apisigningonly -Force
+>> k6 run src/apisigningonly/apidocumentdetail.js > src/apisigningonly/hasil_detail.txt 2>&1
+>> Get-Content src/apisigningonly/hasil_detail.txt |
+>>   Where-Object { $_ -like '*msg=*' } |
+>>   ForEach-Object {
+>>     $_ = $_ -replace '\\', ''
+>>     $_ = $_ -replace 'source=console',''
+>>
+>>     $rawMsg = ($_ -split 'msg=')[1]
+>>     $f = $rawMsg -replace '"', '' -split ','
+>>
+>>     if ($f.Count -lt 6) { return }
+>>
+>>     [PSCustomObject]@{
+>>       referenceId     = $f[0].Trim()
+>>       statusCode      = [int]$f[1].Trim()
+>>       responseTimeMs  = [double]$f[2].Trim()
+>>       message         = $f[3].Trim()
+>>       documentId      = $f[4].Trim()
+>>       signId          = $f[5].Trim()
+>>     }
+>>   } |
+>>   ConvertTo-Csv -NoTypeInformation |
+>>   ForEach-Object { $_ -replace '"' } |
+>>   Set-Content src/apisigningonly/log_detail.csv -Encoding UTF8
+
+_________________________________________________________________
+Powershell untuk menjadikan ke csv dan tanpa petik --- hasil recipeint
+New-Item -ItemType Directory -Path src/apisigningonly -Force
+>> 
+>> k6 run src/apisigningonly/apisigningonly.js > src/apisigningonly/hasil_recipient.txt 2>&1
+>> 
+>> Get-Content src/apisigningonly/hasil_recipient.txt |
+>>   Where-Object { $_ -like '*msg=*' } |
+>>   ForEach-Object {
+>>     $_ = $_ -replace '\\', ''
+>>     $_ = $_ -replace 'source=console',''
+>> 
+>>     $f = ($_ -split 'msg=')[1] -replace '"', '' -split ','
+>> 
+>>     if ($f.Count -lt 6) { return }
+>> 
+>>     [PSCustomObject]@{
+>>       'user.email'            = $f[0].Trim()
+>>       'user.referenceId'      = $f[1].Trim()
+>>       'res.status'            = [int]$f[2].Trim()
+>>       'res.timings.duration'  = [double]$f[3].Trim()
+>>       'message'               = $f[4].Trim()
+>>     }
+>>   } |
+>>   ConvertTo-Csv -NoTypeInformation |
+>>   ForEach-Object { $_ -replace '"', '' } |
+>>   Set-Content src/apisigningonly/log_recipient.csv -Encoding UTF8
+
+_____________________________________________________
+tambahkan add content untuk melanjutkan csv yg sudah ada 
+New-Item -ItemType Directory -Path src/apisigningonly -Force
+>> k6 run src/apisigningonly/apisigningonly.js > src/apisigningonly/hasil_log5010.txt 2>&1
+>> 
+>> Get-Content src/apisigningonly/hasil_log5010.txt |
+>>   Where-Object { $_ -like '*msg=*' } |
+>>   ForEach-Object {
+>>     $_ = $_ -replace '\\', ''
+>>     $_ = $_ -replace 'source=console',''
+>> 
+>>     $f = ($_ -split 'msg=')[1] -replace '"', '' -split ','
+>> 
+>>     if ($f.Count -lt 6) { return }
+>> 
+>>     [PSCustomObject]@{
+>>       'user.email'            = $f[0].Trim()
+>>       'user.referenceId'      = $f[1].Trim()
+>>       'res.status'            = [int]$f[2].Trim()
+>>       'res.timings.duration'  = [double]$f[3].Trim()
+>>       'message'               = $f[4].Trim()
+>>       'documentId'            = $f[5].Trim()
+>>     }
+>>   } |
+>>   ConvertTo-Csv -NoTypeInformation |
+>>   ForEach-Object { $_ -replace '"', '' } |
+>>   Add-Content src/apisigningonly/log_summary5010.csv -Encoding UTF8
+
+
+atau 
+
+
+$csvPath = "src/apisigningonly/log_summary5010.csv"
+
+$parsed = Get-Content src/apisigningonly/hasil_log5010.txt |
+  Where-Object { $_ -like '*msg=*' } |
+  ForEach-Object {
+    $_ = $_ -replace '\\', ''
+    $_ = $_ -replace 'source=console',''
+    $f = ($_ -split 'msg=')[1] -replace '"', '' -split ','
+
+    if ($f.Count -lt 6) { return }
+
+    [PSCustomObject]@{
+      'user.email'            = $f[0].Trim()
+      'user.referenceId'      = $f[1].Trim()
+      'res.status'            = [int]($f[2].Trim())
+      'res.timings.duration'  = [double]($f[3].Trim())
+      'message'               = $f[4].Trim()
+      'documentId'            = $f[5].Trim()
+    }
+  }
+
+# Convert ke CSV dan skip header baris pertama
+if ($parsed.Count -gt 0) {
+  $parsed |
+    ConvertTo-Csv -NoTypeInformation |
+    Select-Object -Skip 1 |  # <--- inilah bagian pentingnya
+    ForEach-Object { $_ -replace '"' } |
+    Add-Content $csvPath -Encoding UTF8
+}

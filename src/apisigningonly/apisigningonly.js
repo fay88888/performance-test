@@ -28,8 +28,8 @@ const users = new SharedArray('userData', () =>
 );
 
 export const options = {
-  vus: 1,                  // Jumlah virtual user aktif
-  duration: '10s',         // Total waktu pengujian
+  vus: 50,                  // Jumlah virtual user aktif
+  duration: '200s',         // Total waktu pengujian
   thresholds: {
     http_req_duration: ['p(95)<=10000'], // 95% request < 10 detik
   },
