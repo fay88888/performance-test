@@ -4,7 +4,7 @@ import { SharedArray } from 'k6/data';
 import crypto from 'k6/crypto';
 
 // Membaca file base64 specimen (misalnya tanda tangan paraf)
-const base64Seal = open('./seal1.02MB.b64');
+const base64Stamp = open('./stamp1.02MB.b64');
 
 // Membaca user.csv dengan hanya empat kolom
 const users = new SharedArray('userData', () =>
@@ -55,11 +55,11 @@ if (__ITER % 5 === 0 && __ITER !== 0) {
     idUser: user.userid,
     epochTime: Number(timestamp),
     data: {
-      base64Seal: base64Seal,
+      base64Stamp: base64Stamp,
     }
   });
 
-  const res = http.post('https://apionprem.mesign.id/api/v1/core/seal/update', payload, {
+  const res = http.post('https://apionprem.mesign.id/api/v1/core/stamp/update', payload, {
     headers,
     timeout: '15s',
   });
