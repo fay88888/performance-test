@@ -4,7 +4,7 @@ import { SharedArray } from 'k6/data';
 import crypto from 'k6/crypto';
 
 // Membaca file base64 specimen (misalnya tanda tangan paraf)
-const base64Seal = open('./seal.b64');
+const base64Seal = open('./seal1.02MB.b64');
 
 // Membaca user.csv dengan hanya empat kolom
 const users = new SharedArray('userData', () =>
@@ -24,7 +24,7 @@ const users = new SharedArray('userData', () =>
 );
 
 export const options = {
-  vus: 200,
+  vus: 40,
   duration: '60s',
   thresholds: {
     http_req_duration: ['p(95)<=10000'],
