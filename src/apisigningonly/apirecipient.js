@@ -29,7 +29,7 @@ const STATIC_USERID = 'b6cbf1f6-d469-4973-8e77-9fc25724da5e';
 );*/
 
 const users = new SharedArray('userData', () => {
-  const lines = open('./log_det2000.csv')
+  const lines = open('./log_det500_3.csv')
     .split('\n')
     .map(line => line.replace('\r', ''))
     .slice(1)
@@ -92,8 +92,7 @@ export const options = {
     tandaDokumen: {
       executor: 'per-vu-iterations',
       vus: vus,
-      iterations: iterations,
-      maxDuration: '15m'
+      iterations: iterations
     }
   },
 };
