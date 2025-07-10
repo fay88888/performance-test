@@ -6,7 +6,7 @@ import crypto from 'k6/crypto';
 const STATIC_SERVER_KEY = 'a2V5MDYwYTA4NDMtZjRiNi00YTJmLWIzYTMtM2ZkYTE3ZGM5MzJj';
 const STATIC_CLIENT_ID = 'Y2lkOTQ2YzhiMjYtZjdkNy00NmYzLTk1YmUtZjcxMDAzZDQ1YjI4';
 const STATIC_USERID = 'b6cbf1f6-d469-4973-8e77-9fc25724da5e';
-const STATIC_SPECIMENT_ID = 'df83bb17-add6-4677-89d6-395d2e5d2965';
+
 
 /*const users = new SharedArray('userData', () =>
   open('./log_detail48.csv')
@@ -29,7 +29,7 @@ const STATIC_SPECIMENT_ID = 'df83bb17-add6-4677-89d6-395d2e5d2965';
 );*/
 
 const users = new SharedArray('userData', () => {
-  const lines = open('./log_detailafo440.csv')
+  const lines = open('./log_det6.csv')
     .split('\n')
     .map(line => line.replace('\r', ''))
     .slice(1)
@@ -84,7 +84,7 @@ export default function signingFlow() {
 
 
 const totalUsers = users.length;
-const vus = 50;
+const vus = 1;
 const iterations = Math.ceil(totalUsers / vus); // ⏱ Hitung berdasarkan jumlah data
 
 export const options = {
@@ -124,7 +124,7 @@ export default function signingFlow() {
     data: {
      pdfPassword: null,
      documentId: user.documentId,
-     otp: '000000',
+     otp: "000000",
         signatureData: [
             {
                 id: user.signId,
@@ -135,17 +135,17 @@ export default function signingFlow() {
                 page: 1,
                 docWidth: 347.84978200554895,
                 docHeight: 491.66666666666663,
-                offset: '270, 340',
-                focalPoint: '229.0, 392.0',
+                offset: "270, 340",
+                focalPoint: "229.0, 392.0",
                 scale: 0.3,
                 scaleWeb: 1.0,
-                specimenType: 'signature',
+                specimenType: "signature",
                 moveable: false,
-                specimenId: STATIC_SPECIMENT_ID
+                specimenId: "df83bb17-add6-4677-89d6-395d2e5d2965"
     }
     ],
-        location: 'Surabaya',
-        reason: 'I Approve this'
+        location: "Surabaya",
+        reason: "I Approve this"
 }
   });
 
@@ -160,24 +160,23 @@ export default function signingFlow() {
     'under 10s': r => r.timings.duration < 10000,
   });
 
-  if (res.status === 200) {
-    try {
-      const responseJson = res.json();
-      const message = responseJson?.message || '';
+ 
+if (res.status === 200) {
+  try {
+    const responseJson = res.json();
+    const message = responseJson?.message || '';
 
-      console.log(`${STATIC_USERID},${res.status},${res.timings.duration},"${message}","${documentId}"`);
-
-      //console.log('Response JSON:\n' + JSON.stringify(responseJson, null, 2));
-
-    } catch (e) {
-      console.log(`${STATIC_USERID},${res.status},${res.timings.duration},"ParseError","",""`);
-      console.error('Gagal parse JSON:', res.body);
-    }
-  } else {
-    console.log(`${STATIC_USERID},${res.status},${res.timings.duration},"Failed","",""`);
-    console.error('Respon gagal dengan status:', res.status);
-    console.error('Body respons:\n' + res.body);
+    console.log(`msg=${res.status},${res.timings.duration},"${message}"`);
+  } catch (e) {
+    console.log(`msg=${res.status},${res.timings.duration},"ParseError"`);
+    console.error('Gagal parse JSON:', res.body);
   }
+} else {
+  console.log(`msg=${res.status},${res.timings.duration},"Failed"`);
+  console.error('Respon gagal dengan status:', res.status);
+  console.error('Body respons:\n' + res.body);
+}
 
   sleep(Math.random() * 2);
 }
+

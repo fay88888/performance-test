@@ -33,7 +33,7 @@ const users = new SharedArray('userData', () => {
 });
 
 const totalUsers = users.length;
-const vus = 50;
+const vus = 20;
 const iterations = Math.ceil(totalUsers / vus); // ⏱ Hitung berdasarkan jumlah data
 
 export const options = {
