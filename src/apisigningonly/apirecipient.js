@@ -6,6 +6,7 @@ import crypto from 'k6/crypto';
 const STATIC_SERVER_KEY = 'a2V5MDYwYTA4NDMtZjRiNi00YTJmLWIzYTMtM2ZkYTE3ZGM5MzJj';
 const STATIC_CLIENT_ID = 'Y2lkOTQ2YzhiMjYtZjdkNy00NmYzLTk1YmUtZjcxMDAzZDQ1YjI4';
 const STATIC_USERID = 'b6cbf1f6-d469-4973-8e77-9fc25724da5e';
+const STATIC_SPECIMENT_ID = 'df83bb17-add6-4677-89d6-395d2e5d2965';
 
 /*const users = new SharedArray('userData', () =>
   open('./log_detail48.csv')
@@ -28,37 +29,40 @@ const STATIC_USERID = 'b6cbf1f6-d469-4973-8e77-9fc25724da5e';
 );*/
 
 const users = new SharedArray('userData', () => {
-  const lines = open('./log_detail48.csv')
-  .split('\n')
-  .map(line => line.replace('\r', ''))
-  .slice(1)
-  .filter(line => line.trim() !== '');
+  const lines = open('./log_detailafo440.csv')
+    .split('\n')
+    .map(line => line.replace('\r', ''))
+    .slice(1)
+    .filter(line => line.trim() !== '');
 
+  const seen = new Set();
 
-const seen = new Set();
+  let valid = 0;
+  let skipped = 0;
+  let duplicates = 0;
 
-let valid = 0;
-let skipped = 0;
+  return lines
+    .map(line => {
+      const columns = line.split(',');
+      if (columns.length >= 6) {
+        const docId = columns[4].trim();
+        const signId = columns[5].trim();
 
-return lines
-  .map(line => {
-    const columns = line.split(',');
-    if (columns.length >= 6) {
-      const docId = columns[4].trim();
-      const signId = columns[5].trim();
-
-      if (!seen.has(docId)) {
-        seen.add(docId);
-        valid++;
-        return { documentId: docId, signId: signId };
+        if (!seen.has(docId)) {
+          seen.add(docId);
+          valid++;
+          return { documentId: docId, signId: signId };
+        } else {
+          console.warn(`⚠️ Duplikat documentId ditemukan: ${docId}`);
+          duplicates++;
+        }
+      } else {
+        console.warn('⚠️ Baris tidak lengkap, dilewati:', line);
+        skipped++;
       }
-    } else {
-      console.warn('⚠️ Baris tidak lengkap, dilewati:', line);
-      skipped++;
-    }
-    return null;
-  })
-  .filter(Boolean);
+      return null;
+    })
+    .filter(Boolean);
 });
 
 /*export const options = {
@@ -80,7 +84,7 @@ export default function signingFlow() {
 
 
 const totalUsers = users.length;
-const vus = 48;
+const vus = 50;
 const iterations = Math.ceil(totalUsers / vus); // ⏱ Hitung berdasarkan jumlah data
 
 export const options = {
@@ -120,7 +124,7 @@ export default function signingFlow() {
     data: {
      pdfPassword: null,
      documentId: user.documentId,
-     otp: "000000",
+     otp: '000000',
         signatureData: [
             {
                 id: user.signId,
@@ -128,35 +132,27 @@ export default function signingFlow() {
                 y: 200.0,
                 height: 50.0,
                 width: 150.0,
-                page: 3,
+                page: 1,
                 docWidth: 347.84978200554895,
                 docHeight: 491.66666666666663,
-                offset: "270, 340",
-                focalPoint: "229.0, 392.0",
+                offset: '270, 340',
+                focalPoint: '229.0, 392.0',
                 scale: 0.3,
                 scaleWeb: 1.0,
-                specimenType: "signature",
+                specimenType: 'signature',
                 moveable: false,
-                mobileX: 250.0,
-                mobileY: 260.0,
-                mobileHeight: 40.0,
-                mobileWidth: 140.0,
-                webX: null,
-                webY: null,
-                webHeight: null,
-                webWidth: null,
-                specimenId: "df83bb17-add6-4677-89d6-395d2e5d2965"
-
+                specimenId: STATIC_SPECIMENT_ID
     }
     ],
-        "location": "Surabaya",
-        "reason": "I Approve this"
+        location: 'Surabaya',
+        reason: 'I Approve this'
 }
   });
- // console.log(payload);
+
+ //console.log(payload);
   const res = http.post('https://apionprem.mesign.id/api/v1/signing/usersign', payload, {
     headers,
-    timeout: '30s',
+    timeout: '180s',
   });
 
   check(res, {
@@ -169,7 +165,7 @@ export default function signingFlow() {
       const responseJson = res.json();
       const message = responseJson?.message || '';
 
-      console.log(`${STATIC_USERID},${res.status},${res.timings.duration},"${message}"`);
+      console.log(`${STATIC_USERID},${res.status},${res.timings.duration},"${message}","${documentId}"`);
 
       //console.log('Response JSON:\n' + JSON.stringify(responseJson, null, 2));
 
