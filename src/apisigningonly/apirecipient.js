@@ -29,7 +29,7 @@ const STATIC_USERID = 'b6cbf1f6-d469-4973-8e77-9fc25724da5e';
 );*/
 
 const users = new SharedArray('userData', () => {
-  const lines = open('./log_det500_3.csv')
+  const lines = open('./userlog_1000.csv')
     .split('\n')
     .map(line => line.replace('\r', ''))
     .slice(1)
@@ -84,7 +84,7 @@ export default function signingFlow() {
 
 
 const totalUsers = users.length;
-const vus = 7;
+const vus = 1002;
 const iterations = Math.ceil(totalUsers / vus); // ⏱ Hitung berdasarkan jumlah data
 
 export const options = {
