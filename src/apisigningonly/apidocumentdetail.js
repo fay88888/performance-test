@@ -8,7 +8,7 @@ const STATIC_CLIENT_ID = 'Y2lkOTQ2YzhiMjYtZjdkNy00NmYzLTk1YmUtZjcxMDAzZDQ1YjI4';
 const STATIC_USERID = 'b6cbf1f6-d469-4973-8e77-9fc25724da5e';
 
 const users = new SharedArray('userData', () => {
-  const lines = open('./user_500.csv')
+  const lines = open('./123user.csv')
     .split('\n')
     .slice(1)
     .filter(line => line.trim() !== '');
@@ -33,7 +33,7 @@ const users = new SharedArray('userData', () => {
 });
 
 const totalUsers = users.length;
-const vus = 20;
+const vus = 53;
 const iterations = Math.ceil(totalUsers / vus); // ⏱ Hitung berdasarkan jumlah data
 
 export const options = {
