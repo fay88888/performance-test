@@ -8,7 +8,7 @@ const STATIC_CLIENT_ID = 'Y2lkOTQ2YzhiMjYtZjdkNy00NmYzLTk1YmUtZjcxMDAzZDQ1YjI4';
 const STATIC_USERID = 'b6cbf1f6-d469-4973-8e77-9fc25724da5e';
 
 const users = new SharedArray('userData', () => {
-  const lines = open('./afo100.csv')
+  const lines = open('./afo500_3.csv')
     .split('\n')
     .slice(1)
     .filter(line => line.trim() !== '');
