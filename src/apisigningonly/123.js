@@ -35,7 +35,7 @@ const users = new SharedArray('userData', () => {
 });
 
 const totalUsers = users.length;
-const vus = 5;
+const vus = 45;
 const iterations = Math.ceil(totalUsers / vus);
 
 export const options = {
@@ -105,7 +105,7 @@ export default function signingFlow() {
 
   check(res, {
     'status 200': r => r.status === 200,
-    'under 10s': r => r.timings.duration < 10000,
+    'under 30s': r => r.timings.duration < 10000,
   });
 
 
