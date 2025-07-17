@@ -8,7 +8,7 @@ import encoding from 'k6/encoding';
 const base64Pdf = open('../document.b64');
 
 const users = new SharedArray('userData', () =>
-  open('../proddrcload/produser.csv')
+  open('./produser.csv')
     .split('\n')
     .slice(1)
     .filter(line => line.trim() !== '')
