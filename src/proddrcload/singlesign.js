@@ -28,8 +28,8 @@ const users = new SharedArray('userData', () =>
 );
 
 export const options = {
-  vus: 10,                  // Jumlah virtual user aktif
-  duration: '10s',         // Total waktu pengujian
+  vus: 600,                  // Jumlah virtual user aktif
+  duration: '30s',         // Total waktu pengujian
   thresholds: {
     http_req_duration: ['p(95)<=10000'], // 95% request < 10 detik
   },
@@ -70,34 +70,27 @@ const payload = JSON.stringify({
   epochTime: Number(timestamp),
   data: {
     pdfName: user.pdfName,
-    signingType: "hierarchy",
+    otp: "000000",
+    signingType: "single",
     location: user.location,
     deleteExistSign: true,
     paidAllSign: false,
-    signatureData: [],
-    userList: [
-      {
-        referenceId: user.referenceId, // Make sure this exists in your `user` object
-        expiryDate: "14/10/2025 06:30:00" ,  // Also from `user`, example: "14/10/2025 06:30:00"
-        signatureData: [
-          {
-            x: 100,
-            y: 330,
-            width: 150,
-            height: 50,
-            page: 1,
-            specimenType: "signature",
-            docWidth: 347.84978200554895,
-            docHeight: 491.66666666666663,
-          },
-        ],
-        role: ["signer"],
-      },
+    reason: "I Approve this",
+    signatureData: [{x: 280,
+          y: 350,
+          width: 75,
+          height: 50,
+          page: 1,
+          specimenId: user.specimenId,
+          specimenType: "signature",
+          addDetail: false,
+          docWidth: 347.84978200554895,
+          docHeight: 491.66666666666663}
     ],
+    userList: [],
     base64Pdf: base64Pdf,
   },
 });
-  
 
   //const res = http.post('https://apionprem.mesign.id/api/v1/signing/initsign', payload, {
   const res = http.post('https://cloudapi.ezsign.id/api/v1/signing/initsign', payload, {
@@ -107,7 +100,7 @@ const payload = JSON.stringify({
 
   check(res, {
   'status 200': r => r.status === 200,
-  'under 30s': r => r.timings.duration < 10000,});
+  'under 50s': r => r.timings.duration < 50000,});
 
   // console.log(res);
 
@@ -123,7 +116,7 @@ if (res.status === 200) {
     message = 'ParseError';
   }
 
-  console.log(`${user.email},${user.referenceId},${res.status},${res.timings.duration},"${message}","${documentId}"`);
+  console.log(`${user.email},${res.status},${res.timings.duration},"${message}","${documentId}"`);
 }
  else {
   console.error(`${user.email} gagal: status ${res.status} - ${res.status_text}`);

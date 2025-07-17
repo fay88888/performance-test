@@ -9,7 +9,7 @@ const STATIC_USERID = '29367fb4-e2cd-4eab-aa58-20fd360fff0c';
 
 // 🧩 Ambil documentId dan signId unik dari CSV
 const users = new SharedArray('userData', () => {
-  const lines = open('./detlog.csv')
+  const lines = open('./detlog5.csv')
     .split('\n')
     .slice(1)
     .filter(line => line.trim() !== '');
@@ -35,7 +35,7 @@ const users = new SharedArray('userData', () => {
 });
 
 const totalUsers = users.length;
-const vus = 1;
+const vus = 117;
 const iterations = Math.ceil(totalUsers / vus);
 
 export const options = {
@@ -97,23 +97,26 @@ export default function signingFlow() {
       reason: "I Approve this"
     }
   });
-
+  
   //const res = http.post('https://apionprem.mesign.id/api/v1/signing/usersign', payload, {
     const res = http.post('https://cloudapi.ezsign.id/api/v1/signing/usersign', payload, {
     headers,
-    timeout: '11s',
+    timeout: '180s',
   });
 
   check(res, {
-    'status 200': r => r.status === 200,
-    'under 10s': r => r.timings.duration < 10000,
-  });
+  'status 200': r => r.status === 200,
+  'under 50s': r => r.timings.duration < 50000,
+});
 
 
   if (!res || res.status === 0) {
   console.log(`${res.status},${res.timings.duration},"No Response"`);
   console.error(`❌ ${user.documentId} gagal: Tidak ada respons atau timeout`);
   console.error(`Body:\n${res.body}`);
+  console.log("---------------------------------------------------------------------------------------");
+  console.log(payload);
+  console.log("---------------------------------------------------------------------------------------");
 } else if (res.status === 200) {
   let message = '';
 

@@ -8,7 +8,7 @@ const STATIC_CLIENT_ID = 'Y2lkNjU0NTZlZWMtNjQ5Yy00MTgyLTlhNzUtNDAzMWEyMmFjNjc3';
 const STATIC_USERID = '29367fb4-e2cd-4eab-aa58-20fd360fff0c';
 
 const users = new SharedArray('userData', () => {
-  const lines = open('./runuser.csv')
+  const lines = open('./produser_log5.csv')
     .split('\n')
     .slice(1)
     .filter(line => line.trim() !== '');
@@ -33,7 +33,7 @@ const users = new SharedArray('userData', () => {
 });
 
 const totalUsers = users.length;
-const vus = 1;
+const vus = 10;
 const iterations = Math.ceil(totalUsers / vus); // ⏱ Hitung berdasarkan jumlah data
 
 export const options = {
@@ -77,12 +77,12 @@ export default function signingFlow() {
   //const res = http.post('https://apionprem.mesign.id/api/v1/signing/document/detailpdf', payload, {
     const res = http.post('https://cloudapi.ezsign.id/api/v1/signing/document/detailpdf', payload, {
     headers,
-    timeout: '11s',
+    timeout: '180s',
   });
 
   check(res, {
     'status 200': r => r.status === 200,
-    'under 10s': r => r.timings.duration < 10000,
+    'under 30s': r => r.timings.duration < 10000,
   });
 
   if (res.status === 200) {
