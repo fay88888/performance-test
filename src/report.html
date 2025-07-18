@@ -1,139 +1,67 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>📊 Laporan Interaktif Hasil Load Test K6</title>
+  <meta charset="UTF-8" />
+  <title>📈 Throughput per VU</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body { font-family: 'Segoe UI', sans-serif; margin: 30px; background: #fefefe; color: #333; }
-    h1, h2 { color: #00458a; }
-    .container { max-width: 900px; margin: auto; }
-    .chart-container { margin: 40px 0; }
-    canvas { background: #fff; border: 1px solid #ccc; border-radius: 8px; padding: 10px; }
-    input[type="file"] { margin: 20px 0; }
-    .summary-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    .summary-table th, .summary-table td { border: 1px solid #ccc; padding: 10px; text-align: left; }
-    .summary-table th { background: #f0f6ff; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+      padding: 2em;
+    }
+    canvas {
+      max-width: 700px;
+      margin-top: 30px;
+    }
+    h1 {
+      color: #333;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Load Test Result Report</h1>
-    <input type="file" id="fileInput" accept=".json" />
+  <h1>🔍 Throughput Summary</h1>
+  <p><strong>Generated At:</strong> 2025-07-18 08:06:29</p>
+  <p><strong>Total Success:</strong> 173 requests</p>
+  <p><strong>Total Duration:</strong> 10.2 seconds</p>
+  <p><strong>Total VUs Simulated:</strong> 400</p>
+  <p><strong>Total Throughput:</strong> 16.97 requests/sec</p>
+  <p><strong>Throughput per VU:</strong> 0.0424 requests/sec/VU</p>
 
-    <h2>Execution Summary</h2>
-    <p id="currentDate"></p>
-    <p id="checkSummary"></p>
-    <table class="summary-table" id="summaryTable"><tbody></tbody></table>
-
-    <div class="chart-container">
-      <h2>Response Time Chart (ms)</h2>
-      <canvas id="responChart" height="120"></canvas>
-    </div>
-
-    <div class="chart-container">
-      <h2>Iteration Duration Chart (ms)</h2>
-      <canvas id="iterasiChart" height="120"></canvas>
-    </div>
-  </div>
+  <canvas id="throughputChart"></canvas>
 
   <script>
-    const labels = ['Min', 'Median', 'Avg', 'p90', 'p95', 'p99', 'Max'];
-
-    document.getElementById('fileInput').addEventListener('change', function(evt) {
-      const file = evt.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-            
-        const today = new Date();
-        const formattedDate = today.toLocaleDateString('en-US', {
-        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-        });
-        document.getElementById('currentDate').textContent = `Date: ${formattedDate}`;
-
-  
-          const json = JSON.parse(e.target.result);
-          const dur = json.metrics.http_req_duration;
-          const iter = json.metrics.iteration_duration;
-          const vus =  json.metrics.vus_max?.value || 'Not Available';
-          const httpReqs = json.metrics.http_reqs?.count || 0;
-          const iterations = json.metrics.iterations?.count || 0;
-          const checkPass = json.metrics.checks?.passes || 0;
-          const checkFail = json.metrics.checks?.fails || 0;
-          const totalChecks = (json.metrics.checks?.passes || 0) + (json.metrics.checks?.fails || 0);
-          const failRate = httpReqs > 0 ? ((checkFail / (checkPass + checkFail)) * 100).toFixed(2) + '%' : '-';
-          const data_received = json.metrics.data_received?.count || 0;
-          const data_sent = json.metrics.data_sent?.count || 0;
-          function formatBytes(bytes) {
-            if (bytes < 1024) return `${bytes} B`;
-            const kb = bytes / 1024;
-            if (kb < 1024) return `${kb.toFixed(1)} KB`;
-            return `${(kb / 1024).toFixed(2)} MB`;
-            }
-
-
-
-          // Update Summary Table
-          const tbody = document.querySelector('#summaryTable tbody');
-          tbody.innerHTML = `
-            <tr><th>Virtual Users (VUs)</th><td>${vus}</td></tr>
-            <tr><th>HTTP Requests</th><td>${httpReqs}</td></tr>
-            <tr><th>Iterations</th><td>${iterations}</td></tr>
-            <tr><th>Checks Total</th><td>${totalChecks}</td></tr>
-            <tr><th>Checks Succeeded</th><td>${checkPass}</td></tr>
-            <tr><th>Checks Failed</th><td>${checkFail}</td></tr>
-            <tr><th>Failed Rate</th><td>${failRate}</td></tr>
-            <tr><th>Response Time (avg)</th><td>${dur.avg.toFixed(2)} ms</td></tr>
-            <tr><th>Iteration Duration (avg)</th><td>${iter.avg.toFixed(2)} ms</td></tr>
-            <tr><th>Data Received</th><td>${formatBytes(data_received)}</td></tr>
-            <tr><th>Data Sent</th><td>${formatBytes(data_sent)}</td></tr>
-          `;
-
-          // Charts
-          const responseData = [dur.min, dur.med, dur.avg, dur["p(90)"], dur["p(95)"], dur["p(99)"], dur.max];
-          const iterData = [iter.min, iter.med, iter.avg, iter["p(90)"], iter["p(95)"], iter["p(99)"], iter.max];
-
-          renderChart("responChart", "Response Time (ms)", "#007bff", "bar", labels, responseData);
-          renderChart("iterasiChart", "Iteration Durations (ms)", "#28a745", "line", labels, iterData);
-        } catch (err) {
-          alert("Gagal memuat file: " + err.message);
-        }
-      };
-      reader.readAsText(file);
-    });
-
-    function renderChart(id, label, color, type, labels, data) {
-      const canvas = document.getElementById(id);
-      if (canvas.chartInstance) canvas.chartInstance.destroy();
-      canvas.chartInstance = new Chart(canvas, {
-        type,
-        data: {
-          labels,
-          datasets: [{
-            label,
-            data,
-            backgroundColor: color,
-            borderColor: color,
-            borderWidth: 2,
-            fill: false,
-            tension: 0.3,
-            pointRadius: 4
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            title: { display: true, text: label },
-            legend: { display: false }
+    const ctx = document.getElementById('throughputChart').getContext('2d');
+    const throughputChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Total Throughput', 'Throughput per VU'],
+        datasets: [{
+          label: 'Requests per Second',
+          data: [16.97, 0.0424],
+          backgroundColor: ['rgba(54, 162, 235, 0.6)', 'rgba(255, 159, 64, 0.6)'],
+          borderColor: ['#3695e2', '#f7903c'],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: { display: true, text: 'Requests/sec' }
           },
-          scales: {
-            y: { beginAtZero: false, title: { display: true, text: 'Miliseconds (ms)' } }
+          x: {
+            title: { display: true, text: 'Metric Type' }
           }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: {
+            label: ctx => `${ctx.raw} req/sec`
+          }}
         }
-      });
-    }
+      }
+    });
   </script>
 </body>
 </html>
