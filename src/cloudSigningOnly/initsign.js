@@ -99,8 +99,8 @@ const payload = JSON.stringify({
 });
   
 
-  //const res = http.post('https://apionprem.mesign.id/api/v1/signing/initsign', payload, {
-  const res = http.post('https://cloudapi.ezsign.id/api/v1/signing/initsign', payload, {
+  const res = http.post('https://apionprem.mesign.id/api/v1/signing/initsign', payload, {
+  //const res = http.post('https://cloudapi.ezsign.id/api/v1/signing/initsign', payload, {
   headers,
   timeout: '180s'  // Batasi waktu maksimum untuk 1 request
 });
