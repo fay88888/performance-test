@@ -3,12 +3,12 @@ import { check, sleep } from 'k6';
 import { SharedArray } from 'k6/data';
 import crypto from 'k6/crypto';
 
-const STATIC_SERVER_KEY = 'a2V5ZTM2ZjIzYjAtMTIyYS00MTU3LWJmMTEtZWU1NzYyNGZhYjE5';
-const STATIC_CLIENT_ID = 'Y2lkNjU0NTZlZWMtNjQ5Yy00MTgyLTlhNzUtNDAzMWEyMmFjNjc3';
-const STATIC_USERID = '29367fb4-e2cd-4eab-aa58-20fd360fff0c';
+const STATIC_SERVER_KEY = 'a2V5ZDQwNWRjZjMtM2JmNi00Yzk4LTk4NDctNmIxMWY2MjhkNzZl';
+const STATIC_CLIENT_ID = 'Y2lkNTlhYzJkNTgtMDRmMC00NDI5LWJiODYtODI5MWFhMTZmZjEy';
+const STATIC_USERID = 'e71f3eec-819e-4e55-9b63-3272655943d7';
 
 const users = new SharedArray('userData', () => {
-  const lines = open('./produser_log5.csv')
+  const lines = open('./produser_log1.csv')
     .split('\n')
     .slice(1)
     .filter(line => line.trim() !== '');
@@ -56,7 +56,7 @@ export default function signingFlow() {
 
   const user = users[userIndex];
   const timestamp = Date.now().toString();
-  const emailMd5 = crypto.md5('faiqotul.annisa@esign.id', 'hex');
+  const emailMd5 = crypto.md5('fay00533@yopmail.com', 'hex');
   const signature = crypto.sha256(STATIC_CLIENT_ID + emailMd5 + timestamp, 'hex');
 
   const headers = {
@@ -74,8 +74,8 @@ export default function signingFlow() {
     },
   });
 
-  //const res = http.post('https://apionprem.mesign.id/api/v1/signing/document/detailpdf', payload, {
-    const res = http.post('https://cloudapi.ezsign.id/api/v1/signing/document/detailpdf', payload, {
+  const res = http.post('https://apionprem.mesign.id/api/v1/signing/document/detailpdf', payload, {
+  //const res = http.post('https://cloudapi.ezsign.id/api/v1/signing/document/detailpdf', payload, {
     headers,
     timeout: '180s',
   });
