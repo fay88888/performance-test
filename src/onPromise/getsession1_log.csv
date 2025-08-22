@@ -1,6 +1,4 @@
-﻿res.status,res.timings.duration,message,sessionId,fileId
-200,9304.324,Success,0c85f37b-0904-40ce-8237-b9aa1269b1b8,
-200,9587.4449,Success,3959fc1f-72c5-4b70-83d8-9c7b1348fd93,
+﻿200,9587.4449,Success,3959fc1f-72c5-4b70-83d8-9c7b1348fd93,
 200,11481.9758,Success,55006d0d-5ada-4a13-b906-cb040a29a66f,
 200,11641.9451,Success,f46b0664-d398-43ea-bb7b-b04044214b96,
 200,11937.3967,Success,d37fe9ef-4fe0-43bd-a95c-b02068bf90a9,
