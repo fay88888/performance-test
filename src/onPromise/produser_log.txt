@@ -1,0 +1,8 @@
+
+         /\      Grafana   /‾‾/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ‾‾\ 
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/ 
+
+time="2025-08-21T18:17:35+07:00" level=error msg="TypeError: Cannot read property 'trim' of undefined or null\n\tat file:///home/qaqc/performance-test/src/cloudSigningOnly/initsign.js:25:21(54)\n\tat map (native)\n\tat file:///home/qaqc/performance-test/src/cloudSigningOnly/initsign.js:15:9(15)\n\tat file:///home/qaqc/performance-test/src/cloudSigningOnly/initsign.js:10:15(24)\n" hint="script exception"
